@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/veandco/go-sdl2/ttf"
 )
 
@@ -17,6 +19,8 @@ func LoadFont(path string, size int32) (result Font) {
 	// We assume that the font is going to always be monospaced
 	metrics, err := font.GlyphMetrics('m')
 	checkError(err)
+
+	fmt.Println(metrics.Advance)
 
 	result.Data = font
 	result.Size = size
