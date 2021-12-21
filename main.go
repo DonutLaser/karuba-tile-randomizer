@@ -39,12 +39,11 @@ func main() {
 				keycode := t.Keysym.Sym
 
 				switch keycode {
-				case sdl.K_LCTRL:
-					fallthrough
-				case sdl.K_RCTRL:
-					input.Ctrl = t.Type == sdl.KEYDOWN
+				case sdl.K_r:
+					if t.State != sdl.RELEASED {
+						input.R = true
+					}
 				case sdl.K_SPACE:
-					// @TODO (!important) should not set true on key repeat
 					if t.State != sdl.RELEASED && t.Repeat == 0 {
 						input.Space = true
 					}

@@ -43,8 +43,8 @@ func NewApp(renderer *sdl.Renderer, windowWidth int32, windowHeight int32) (resu
 	result.Renderer = renderer
 
 	result.RestartInstruction = *NewRichText(&result.Font)
-	result.RestartInstruction.Add("Press", sdl.Color{R: 255, G: 255, B: 255, A: 255})
-	result.RestartInstruction.Add("Ctrl + Space", sdl.Color{R: 238, G: 204, B: 117, A: 255})
+	result.RestartInstruction.Add("Hold", sdl.Color{R: 255, G: 255, B: 255, A: 255})
+	result.RestartInstruction.Add("R", sdl.Color{R: 238, G: 204, B: 117, A: 255})
 	result.RestartInstruction.Add("to restart", sdl.Color{R: 255, G: 255, B: 255, A: 255})
 	result.NextTileInstruction = *NewRichText(&result.Font)
 	result.NextTileInstruction.Add("Press", sdl.Color{R: 255, G: 255, B: 255, A: 255})
@@ -93,17 +93,19 @@ func (app *App) Resize(windowWidth int32, windowHeight int32) {
 }
 
 func (app *App) Tick(input *Input) {
-	if input.Space {
-		if input.Ctrl {
-			// @TODO (!important) hold for some amount of time to reset
-			app.reset()
-		} else if app.RemainingTiles > 0 {
-			app.ActiveTileIndex += 1
-			app.RemainingTiles -= 1
-			app.RemainingText = fmt.Sprintf("Remaining: %d", app.RemainingTiles)
+	if input.Space && app.RemainingTiles > 0 {
+		app.ActiveTileIndex += 1
+		app.RemainingTiles -= 1
+		app.RemainingText = fmt.Sprintf("Remaining: %d", app.RemainingTiles)
 
-			app.loadTile()
-		}
+		app.loadTile()
+
+		return
+	}
+
+	if input.R {
+		// @TODO (!important) hold for some amount of time to reset
+		app.reset()
 	}
 }
 
