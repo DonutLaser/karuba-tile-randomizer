@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -26,7 +24,6 @@ func NewRichText(font *Font) *RichText {
 }
 
 func (rt *RichText) Add(text string, color sdl.Color) {
-	fmt.Println(rt.Font.CharacterWidth)
 	rt.Pieces = append(rt.Pieces, RichTextPiece{
 		Text:  text,
 		Color: color,

@@ -45,7 +45,7 @@ func main() {
 					input.Ctrl = t.Type == sdl.KEYDOWN
 				case sdl.K_SPACE:
 					// @TODO (!important) should not set true on key repeat
-					if t.State != sdl.RELEASED {
+					if t.State != sdl.RELEASED && t.Repeat == 0 {
 						input.Space = true
 					}
 				}
