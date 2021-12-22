@@ -37,10 +37,10 @@ func NewApp(renderer *sdl.Renderer, windowWidth int32, windowHeight int32) (resu
 
 	result.WindowRect = sdl.Rect{X: 0, Y: 0, W: windowWidth, H: windowHeight}
 
-	allTiles := ReadDirectory("assets/images")
+	allTiles := ReadDirectory("assets/images/tiles")
 	result.Tiles = make([]string, len(allTiles))
 	for index, entry := range allTiles {
-		result.Tiles[index] = path.Join("assets/images", entry.Name())
+		result.Tiles[index] = path.Join("assets/images/tiles", entry.Name())
 	}
 	result.RemainingTiles = int32(len(result.Tiles)) - 1
 	result.RemainingText = fmt.Sprintf("Remaining: %d", result.RemainingTiles)
@@ -68,6 +68,10 @@ func NewApp(renderer *sdl.Renderer, windowWidth int32, windowHeight int32) (resu
 }
 
 func (app *App) Close() {
+}
+
+func (app *App) GetIcon() *sdl.Surface {
+	return LoadIcon("assets/images/icon.png")
 }
 
 func (app *App) shuffleTiles() {

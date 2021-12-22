@@ -25,7 +25,11 @@ func main() {
 	windowWidth, windowHeight := window.GetSize()
 
 	app := NewApp(renderer, windowWidth, windowHeight)
+
+	icon := app.GetIcon()
 	input := Input{}
+
+	window.SetIcon(icon)
 
 	running := true
 	for running {
@@ -69,5 +73,6 @@ func main() {
 		app.Render()
 	}
 
+	icon.Free()
 	app.Close()
 }
