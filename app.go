@@ -22,6 +22,12 @@ type App struct {
 	Font     Font
 	Renderer *sdl.Renderer
 
+	HoldStartTime   uint32
+	ResetTime       uint32
+	CurrentTime     uint32
+	ResetInProgress bool
+	DisableReset    bool
+
 	RestartInstruction  RichText
 	NextTileInstruction RichText
 }
@@ -41,6 +47,8 @@ func NewApp(renderer *sdl.Renderer, windowWidth int32, windowHeight int32) (resu
 
 	result.Font = LoadFont("assets/fonts/consolab.ttf", 14)
 	result.Renderer = renderer
+
+	result.ResetTime = 2200 // 2.2 seconds
 
 	result.RestartInstruction = *NewRichText(&result.Font)
 	result.RestartInstruction.Add("Hold", sdl.Color{R: 255, G: 255, B: 255, A: 255})
@@ -103,15 +111,40 @@ func (app *App) Tick(input *Input) {
 		return
 	}
 
-	if input.R {
-		// @TODO (!important) hold for some amount of time to reset
-		app.reset()
+	if input.R == KeyStateWentDown {
+		if !app.DisableReset {
+			app.HoldStartTime = sdl.GetTicks()
+			app.CurrentTime = app.HoldStartTime
+			app.ResetInProgress = true
+		}
+	} else if input.R == KeyStateDown {
+		if !app.DisableReset {
+			app.CurrentTime = sdl.GetTicks()
+			if app.CurrentTime >= app.HoldStartTime+app.ResetTime {
+				app.reset()
+				app.DisableReset = true
+				app.ResetInProgress = false
+			}
+		}
+	} else if input.R == KeyStateWentUp {
+		app.DisableReset = false
+		app.ResetInProgress = false
 	}
 }
 
 func (app *App) Render() {
 	app.Renderer.SetDrawColor(0, 0, 0, 255)
 	app.Renderer.Clear()
+
+	if app.ResetInProgress {
+		progressRect := sdl.Rect{
+			X: app.WindowRect.X,
+			Y: app.WindowRect.Y,
+			W: int32((float64(app.CurrentTime) - float64(app.HoldStartTime)) / float64(app.ResetTime) * float64(app.WindowRect.W)),
+			H: app.WindowRect.H,
+		}
+		DrawRectTransparent(app.Renderer, &progressRect, sdl.Color{R: 238, G: 204, B: 117, A: 125})
+	}
 
 	tilePosition := sdl.Point{X: app.WindowRect.W/2 - app.ActiveTile.Width/2, Y: app.WindowRect.H/2 - app.ActiveTile.Height/2}
 	app.ActiveTile.Render(app.Renderer, tilePosition, sdl.Color{R: 255, G: 255, B: 255, A: 255})

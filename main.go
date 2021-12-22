@@ -29,6 +29,12 @@ func main() {
 
 	running := true
 	for running {
+		if input.R == KeyStateWentUp {
+			input.R = KeyStateNone
+		} else if input.R == KeyStateWentDown {
+			input.R = KeyStateDown
+		}
+
 		input.Clear()
 
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -40,8 +46,12 @@ func main() {
 
 				switch keycode {
 				case sdl.K_r:
-					if t.State != sdl.RELEASED {
-						input.R = true
+					if t.State != sdl.RELEASED && t.Repeat == 0 {
+						input.R = KeyStateWentDown
+					} else if t.Repeat != 0 {
+						input.R = KeyStateDown
+					} else if t.State == sdl.RELEASED {
+						input.R = KeyStateWentUp
 					}
 				case sdl.K_SPACE:
 					if t.State != sdl.RELEASED && t.Repeat == 0 {
